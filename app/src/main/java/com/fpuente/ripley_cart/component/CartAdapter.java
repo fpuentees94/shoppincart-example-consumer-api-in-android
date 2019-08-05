@@ -1,22 +1,18 @@
 package com.fpuente.ripley_cart.component;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.fpuente.ripley_cart.R;
-import com.fpuente.ripley_cart.model.Attribute;
 import com.fpuente.ripley_cart.model.Product;
 
 import java.util.ArrayList;
@@ -24,8 +20,8 @@ import java.util.List;
 
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ItemViewHolder> {
-    private List<Product> Items = new ArrayList<>();
-    Context mContext;
+    private List<Product> Items;
+    private Context mContext;
 
     public CartAdapter(Context context) {
         Items = new ArrayList<>();

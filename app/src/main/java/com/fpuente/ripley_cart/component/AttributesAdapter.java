@@ -7,19 +7,19 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fpuente.ripley_cart.R;
 import com.fpuente.ripley_cart.model.Attribute;
-import com.fpuente.ripley_cart.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.ItemViewHolder> {
-    private List<Attribute> Items = new ArrayList<>();
-    Context mContext;
+    private List<Attribute> Items;
+    private Context mContext;
 
     public AttributesAdapter(Context context) {
         Items = new ArrayList<>();
@@ -30,12 +30,12 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.It
         this.Items = items;
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
+    class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView txtName, txtValue;
         RelativeLayout attribute;
 
 
-        public ItemViewHolder(View view) {
+        ItemViewHolder(View view) {
             super(view);
             txtName =  view.findViewById(R.id.txt_name);
             txtValue = view.findViewById(R.id.txt_value);
@@ -45,14 +45,15 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.It
 
     }
 
+    @NonNull
     @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.atribute, parent, false);
         return new ItemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         Attribute model = Items.get(position);
         holder.txtName.setText( model.getName());
         holder.txtValue.setText( model.getValue());

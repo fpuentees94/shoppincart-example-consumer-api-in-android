@@ -7,7 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-public class VolleyRP {
+class VolleyRP {
     private static VolleyRP mVolleyRP = null;
     private RequestQueue mRequestQueue;
 
@@ -15,7 +15,7 @@ public class VolleyRP {
         mRequestQueue = Volley.newRequestQueue(context);
     }
 
-    public static VolleyRP getInstance(Context context) {
+    static VolleyRP getInstance(Context context) {
         if (mVolleyRP == null) {
             mVolleyRP = new VolleyRP(context);
         }
@@ -23,11 +23,11 @@ public class VolleyRP {
     }
 
 
-    public RequestQueue getRequestQueue() {
+    RequestQueue getRequestQueue() {
         return mRequestQueue;
     }
 
-    public static void addToQueue(Request request, RequestQueue fRequestQueue, Context context, VolleyRP volley) {
+    static void addToQueue(Request request, RequestQueue fRequestQueue, Context context, VolleyRP volley) {
         if (request != null) {
             request.setTag(context);
             if (fRequestQueue == null)

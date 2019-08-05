@@ -31,7 +31,8 @@
             android:textColor="#000000"
             android:text="Mi bolsa"
             android:textSize="19sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="50dp" />
     </androidx.appcompat.widget.Toolbar>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_area"

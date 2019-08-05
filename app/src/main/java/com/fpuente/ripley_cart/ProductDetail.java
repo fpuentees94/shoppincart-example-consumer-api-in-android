@@ -96,10 +96,10 @@ public class ProductDetail extends AppCompatActivity {
             cart.setVisibility(View.INVISIBLE);
             priceNormal.setForeground(null);
         }
-        carouselView = (CarouselView) findViewById(R.id.carouselView);
+        carouselView = findViewById(R.id.carouselView);
         carouselView.setPageCount(images.size());
         carouselView.setImageListener(imageListener);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_attributes);
+        mRecyclerView = findViewById(R.id.recycler_view_attributes);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mAdapter = new AttributesAdapter(this);
@@ -365,7 +365,6 @@ public class ProductDetail extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         SingletoneRipley singletoneRipley = SingletoneRipley.getInstance(this);
-        ;
         getMenuInflater().inflate(R.menu.cart_menu, menu);
         MenuItem menuItem = menu.findItem(R.id.cart_action);
         menuItem.setIcon(ServiceUtils.convertLayoutToImage(ProductDetail.this,

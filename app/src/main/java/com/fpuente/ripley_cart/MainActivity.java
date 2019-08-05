@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
             context = this;
-            mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-            progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+            mRecyclerView = findViewById(R.id.recycler_view);
+            progressBar = findViewById(R.id.progress_bar);
 
             Toolbar toolbar = findViewById(R.id.toolbar_home);
             toolbar.setTitle("");

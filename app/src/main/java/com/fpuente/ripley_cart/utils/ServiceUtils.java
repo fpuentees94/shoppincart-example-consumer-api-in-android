@@ -75,7 +75,7 @@ public class ServiceUtils {
             View counterTextPanel = view.findViewById(R.id.counterValuePanel);
             counterTextPanel.setVisibility(View.GONE);
         } else {
-            TextView textView = (TextView) view.findViewById(R.id.count);
+            TextView textView = view.findViewById(R.id.count);
             textView.setText("" + count);
         }
 
