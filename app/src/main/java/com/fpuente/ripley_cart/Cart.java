@@ -6,14 +6,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.fpuente.ripley_cart.api.VolleyService;
 import com.fpuente.ripley_cart.component.CartAdapter;
+import com.fpuente.ripley_cart.config.Config;
+import com.fpuente.ripley_cart.model.Product;
+import com.fpuente.ripley_cart.preferences.PreferenceCart;
+import com.fpuente.ripley_cart.utils.ServiceUtils;
 import com.fpuente.ripley_cart.utils.SingletoneRipley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Cart extends AppCompatActivity {
 
@@ -22,6 +36,7 @@ public class Cart extends AppCompatActivity {
     TextView txtQuantity, txtPriceList, txtPriceCart;
     ImageView exitCart;
     Button saleOrder;
+    PreferenceCart preferenceCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +44,8 @@ public class Cart extends AppCompatActivity {
         setContentView(R.layout.activity_cart);
 
         singletoneRipley = SingletoneRipley.getInstance(this);
+        preferenceCart = new PreferenceCart(this);
+        getProductToCart(preferenceCart.getKeyCustomerId(),preferenceCart.getKeyCartId());
 
         RecyclerView mRecyclerView = findViewById(R.id.recycler_view_cart);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -79,8 +96,39 @@ public class Cart extends AppCompatActivity {
             }
         });
 
+    }
+    public void getProductToCart( String customer_id, String cart_id){
+        VolleyService request = new VolleyService() {
+            @Override
+            public void requestSuccessful(JSONObject j) {
+                Log.d("requesttttttttt",j.toString());
+                try {
+                    JSONArray productsJSON = j.getJSONArray("products");
+                    ArrayList<Product> products = new ArrayList<>();
+                    for(int i = 0 ; i < productsJSON.length(); i ++){
+
+                        JSONObject productObject = productsJSON.getJSONObject(i);
+                        Product product = new Product();
+                        product.setSKU(productObject.getString("sku"));
+                        products.add(product);
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
 
+            }
+
+            @Override
+            public void requestFailed() {
+
+            }
+        };
+
+        request.requestJsonGET(this, Config.cart+"?cart_id="+cart_id+"&customer_id="+customer_id);
 
     }
+
 }

@@ -12,7 +12,7 @@ public class Product  implements Serializable {
     int cardPrice = 0;
     String SKU;
     ArrayList<Attribute> Attributes;
-    int quantity;
+    int quantity = 1;
 
 
     public Product() {

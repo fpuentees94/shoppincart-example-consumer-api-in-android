@@ -1,6 +1,9 @@
 package com.fpuente.ripley_cart.api;
 
 
+import android.content.Context;
+
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.fpuente.ripley_cart.config.Config;
 import com.fpuente.ripley_cart.model.Product;
 
@@ -45,7 +48,7 @@ public class ApiRestAppKeep {
             return new  AsyncTaskResult<>(e);
         }
     }
-    public AsyncTaskResult<JSONObject> addProduct(String customer_id, String cart_id, String sku, int price, int quantity){
+    public AsyncTaskResult<JSONObject> addProduct1(String customer_id, String cart_id, String sku, int price, int quantity){
         try {
             /*Map<String,Object> productJson = new HashMap<>();
             productJson.put("price", String.valueOf(price));

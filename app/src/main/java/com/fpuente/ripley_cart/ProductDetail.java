@@ -1,9 +1,11 @@
 package com.fpuente.ripley_cart;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +27,9 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.fpuente.ripley_cart.api.ApiRestAppKeep;
 import com.fpuente.ripley_cart.api.AsyncTaskResult;
+import com.fpuente.ripley_cart.api.VolleyService;
 import com.fpuente.ripley_cart.component.AttributesAdapter;
+import com.fpuente.ripley_cart.config.Config;
 import com.fpuente.ripley_cart.model.Attribute;
 import com.fpuente.ripley_cart.model.Product;
 import com.fpuente.ripley_cart.preferences.PreferenceCart;
@@ -36,9 +40,11 @@ import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ProductDetail extends AppCompatActivity {
 
@@ -121,14 +127,16 @@ public class ProductDetail extends AppCompatActivity {
                         .show();
                 ActivityCompat.invalidateOptionsMenu(ProductDetail.this);
 
-                    /*if(preferenceCart.getKeyCartId() != ""){
+                    if(!preferenceCart.getKeyCartId().equals("")){
 
-                        AddProductToCart(ServiceUtils.shortUUID(),preferenceCart.getKeyCartId(),"123",
-                        123, 2);
+                        addProductToCart(ServiceUtils.shortUUID(),preferenceCart.getKeyCartId(),product.getSKU(),
+                        product.getCardPrice(), product.getQuantity());
+
 
                     }else{
-                        createCart(ServiceUtils.shortUUID());
-                    }*/
+                        createCart(ServiceUtils.shortUUID(),product.getSKU(),product.getCardPrice(),
+                                product.getQuantity());
+                    }
 
             }
         });
@@ -153,7 +161,7 @@ public class ProductDetail extends AppCompatActivity {
     };
 
 
-    private void  createCart(final String customer_id) {
+    private void  createCart(final String customer_id, final String sku, final int price, final int quantity) {
 
 
         new Thread(new Runnable() {
@@ -183,9 +191,8 @@ public class ProductDetail extends AppCompatActivity {
                             case 200:
                                 JSONObject body = (JSONObject) result.get("body");
                                 preferenceCart.setKeyCartId(body.getString("cart_id"));
-
-
-
+                                preferenceCart.setKeyCustomerId(body.getString("customer_id"));
+                                addProductToCart(customer_id,preferenceCart.getKeyCartId(),sku,price,quantity);
 
                                 break;
                             default:
@@ -199,52 +206,80 @@ public class ProductDetail extends AppCompatActivity {
             }
         }).start();
     }
-    private void  AddProductToCart(final String customer_id, final String cart_id, final String sku,
-                                   final int price, final int quantity) {
+    public void addProductToCart(String customer_id, String cart_id, String sku, final int price, int quantity){
+        try {
+            VolleyService request = new VolleyService() {
+                @Override
+                public void requestSuccessful(JSONObject j) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateCart(price);
+                        }
+                    });
 
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ApiRestAppKeep apiRestAppKeep = new ApiRestAppKeep();
-                try {
-                    AsyncTaskResult<JSONObject> asyncTaskResult = apiRestAppKeep.addProduct(customer_id,cart_id,sku,price,quantity);
-
-                    if (asyncTaskResult.getError() != null) {
-
-                        final String msg = "Valide su conexión a internet, no se puede cargar datos iniciales.";
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-
-                    }else
-                    {
-
-                        JSONObject result = asyncTaskResult.getResult();
-                        int code = result.getInt("code");
-
-                        switch (code) {
-                            case 200:
-                                JSONObject body = (JSONObject) result.get("body");
-                                preferenceCart.setKeyCartId(body.getString("cart_id"));
-
-
-
-
-                                break;
-                            default:
-                                Toast.makeText(getApplicationContext(), "Error obteniendo datos iniciales de usuario\ncode: [" + code + "]", Toast.LENGTH_SHORT).show();
-                                break;
-                        }}
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
-        }).start();
+
+                @Override
+                public void requestFailed() {
+
+                }
+            };
+            JSONObject productJson = new JSONObject();
+            productJson.put("price", String.valueOf(price));
+            productJson.put("sku", sku);
+            productJson.put("quantity", String.valueOf(quantity));
+            JSONArray products = new JSONArray();
+            products.put(productJson);
+
+            JSONObject hs = new JSONObject();
+            hs.put("customer_id",customer_id);
+            hs.put("customer_id", customer_id);
+            hs.put("cart_id", cart_id);
+            hs.put("products", products);
+
+            request.requestsJsonPOST(this, Config.products, hs);
+        }catch (Exception e){
+
+        }
+
+    }
+
+    public void updateCart(int price){
+
+        int newPrice = preferenceCart.getKeyTotalPrice() + price;
+        try {
+            VolleyService request = new VolleyService() {
+                @Override
+                public void requestSuccessful(JSONObject j) {
+
+                    try {
+                        Log.d("total_price",j.toString());
+                        preferenceCart.setKeyTotalPrice(j.getInt("total_price"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void requestFailed() {
+
+                }
+            };
+
+            JSONObject hs = new JSONObject();
+            hs.put("customer_id",preferenceCart.getKeyCustomerId());
+            hs.put("cart_id", preferenceCart.getKeyCartId());
+            hs.put("total_price",newPrice );
+
+            request.requestsJsonPUT(this, Config.cart, hs);
+        }catch (Exception e){
+
+        }
+
     }
 
     private void getProduct(final String products) {
